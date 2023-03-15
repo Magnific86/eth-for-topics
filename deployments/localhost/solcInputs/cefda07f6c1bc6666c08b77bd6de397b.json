@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Storage.sol": {
+      "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.9;\n\ncontract Storage {\n    string[] postsHashes;\n    mapping(string => uint) indexes;\n    mapping(address => bool) admins;\n    address public owner;\n    uint internal index;\n\n    constructor() {\n        owner = msg.sender;\n    }\n\n    modifier onlyOwnerOrAdmin() {\n        require(\n            owner == msg.sender || admins[msg.sender],\n            \"Only owner or admin!\"\n        );\n        _;\n    }\n\n    modifier onlyOwner() {\n        require(owner == msg.sender, \"Only owner!\");\n        _;\n    }\n\n    function makeAdmin(address _toMakeAdmin) public {\n        admins[_toMakeAdmin] = true;\n    }\n\n    function removeAdmin(address _toRemoveAdmin) public {\n        admins[_toRemoveAdmin] = false;\n    }\n\n    function getAllPostsHashes() public view returns (string[] memory) {\n        return postsHashes;\n    }\n\n    function addPostHash(string calldata _postHash) external onlyOwnerOrAdmin {\n        postsHashes.push(_postHash);\n        indexes[_postHash] = index;\n        index++;\n    }\n\n    function setNewPostHashAfterEdit(string calldata _newPostHash, string calldata _oldPostHash) external onlyOwnerOrAdmin {\n        uint currIndex = indexes[_oldPostHash];\n        postsHashes[currIndex] = _newPostHash;\n    }\n\n    function deletePostHash(\n        string calldata _postHash\n    ) external onlyOwnerOrAdmin {\n        uint currIndex = indexes[_postHash];\n        delete postsHashes[currIndex];\n    }\n\n    function withDraw(uint _amount, address _to) external onlyOwnerOrAdmin {\n        payable(_to).transfer(_amount);\n    }\n\n    fallback() external payable {}\n\n    receive() external payable {}\n}"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
