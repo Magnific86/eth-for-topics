@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 contract Storage {
-    string[] postsHashes;
+    string[] public postsHashes;
     mapping(string => uint) public indexes;
     mapping(address => bool) public admins;
     address public owner;
@@ -10,6 +10,7 @@ contract Storage {
 
     constructor() {
         owner = msg.sender;
+        admins[msg.sender] = true;
     }
 
     modifier onlyOwnerOrAdmin() {

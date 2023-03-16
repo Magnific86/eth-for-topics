@@ -2,7 +2,7 @@ import { expect } from "./chai-setup";
 import { ethers, deployments, getNamedAccounts } from "hardhat";
 import { Storage } from "../typechain-types";
 const StorageAbi = require("../artifacts/contracts/Storage.sol/Storage.json");
-const {revertedWith} = require("@nomiclabs/hardhat-waffle")
+const { revertedWith } = require("@nomiclabs/hardhat-waffle");
 
 describe("Storage Contract", () => {
   let owner: any;
@@ -34,13 +34,14 @@ describe("Storage Contract", () => {
       expect(await StorageAsUser.admins(user)).to.eq(true);
     });
     it("not allow to make admin another address", async () => {
-     await expect(await StorageAsAdmin.makeAdmin(user)).to.be.revertedWith(
+      await expect(StorageAsAdmin.makeAdmin(user)).to.be.revertedWith(
         "Why you indicate another address"
       );
     });
     it("remove any user admin only owner removeAdmin()", async () => {
+      await (await StorageAsUser.makeAdmin(user)).wait();
       expect(await StorageAsOwner.admins(user)).to.eq(true);
-      const tx = await StorageAsOwner.removeAdmin(admin);
+      const tx = await StorageAsOwner.removeAdmin(user);
       await tx.wait();
       expect(await StorageAsOwner.admins(user)).to.eq(false);
     });
