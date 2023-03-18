@@ -6,7 +6,7 @@ contract Storage {
     mapping(string => uint) public indexes;
     mapping(address => bool) public admins;
     address public owner;
-    uint internal index;
+    uint public index = 1;
 
     constructor() {
         owner = msg.sender;
@@ -57,7 +57,12 @@ contract Storage {
         string calldata _postHash
     ) external onlyOwnerOrAdmin {
         uint currIndex = indexes[_postHash];
-        delete postsHashes[currIndex];
+        require(currIndex > 0, "Undefined index!");
+        require(
+            currIndex <= postsHashes.length + 1,
+            "Index of finded post more than all arr length"
+        );
+        delete postsHashes[currIndex - 1];
     }
 
     function withDraw(uint _amount, address _to) external onlyOwnerOrAdmin {
