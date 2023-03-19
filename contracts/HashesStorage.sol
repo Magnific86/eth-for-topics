@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.9;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.13;
 
-contract Storage {
+contract HashesStorage {
     string[] public postsHashes;
     mapping(string => uint) public indexes;
     mapping(address => bool) public admins;
@@ -27,7 +27,13 @@ contract Storage {
     }
 
     function makeAdmin(address _toMakeAdmin) public {
-        require(_toMakeAdmin == msg.sender, "Why you indicate another address");
+        if (msg.sender != owner) {
+            require(
+                _toMakeAdmin == msg.sender,
+                "Why you indicate another address"
+            );
+        }
+
         admins[_toMakeAdmin] = true;
     }
 
@@ -49,23 +55,25 @@ contract Storage {
         string calldata _newPostHash,
         string calldata _oldPostHash
     ) external onlyOwnerOrAdmin {
-        uint currIndex = indexes[_oldPostHash];
-        postsHashes[currIndex] = _newPostHash;
+        uint currIndexInMapping = indexes[_oldPostHash];
+        postsHashes[currIndexInMapping - 1] = _newPostHash;
+        indexes[_newPostHash] = currIndexInMapping;
+        delete indexes[_oldPostHash];
     }
 
     function deletePostHash(
         string calldata _postHash
     ) external onlyOwnerOrAdmin {
-        uint currIndex = indexes[_postHash];
-        require(currIndex > 0, "Undefined index!");
+        uint currIndexInMapping = indexes[_postHash];
+        require(currIndexInMapping > 0, "Undefined index!");
         require(
-            currIndex <= postsHashes.length + 1,
+            currIndexInMapping <= postsHashes.length + 1,
             "Index of finded post more than all arr length"
         );
-        delete postsHashes[currIndex - 1];
+        delete postsHashes[currIndexInMapping - 1];
     }
 
-    function withDraw(uint _amount, address _to) external onlyOwnerOrAdmin {
+    function withDraw(uint _amount, address _to) external onlyOwner {
         payable(_to).transfer(_amount);
     }
 

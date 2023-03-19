@@ -8,12 +8,13 @@ const func: DeployFunction = async ({
   const { deploy } = deployments;
 
   const { owner } = await getNamedAccounts();
+  console.log("await getNamedAccounts();", owner);
 
-  await deploy("Storage", {
+  await deploy("HashesStorage", {
     from: owner,
     log: true,
   });
 };
 
 export default func;
-func.tags = ["Storage"];
+func.tags = ["HashesStorage"];
