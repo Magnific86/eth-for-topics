@@ -23,11 +23,14 @@ const config: HardhatUserConfig = {
       accounts: [<string>process.env.METEMASK_PRIVATE_KEY],
       chainId: 421613,
     },
+    mumbai: {
+      url: process.env.URL_MUMBAI_RPC,
+      accounts: [<string>process.env.METEMASK_PRIVATE_KEY],
+      chainId: 80001,
+    },
   },
   etherscan: {
-    apiKey: {
-      arbitrumGoerli: process.env.ETHERSCAN_API_KEY,
-    },
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
 };
 
